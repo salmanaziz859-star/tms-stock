@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TMS STOCK - View Only</title>
+<style>
+:root{--navy:#1F3864;--blue:#2E75B6;--red:#C00000;--bg:#EAEEF3;--line:#C9D6E8;--txt:#1F3864}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--txt)}
+header{background:var(--navy);color:#fff;padding:16px 20px}
+header h1{margin:0;font-size:26px;letter-spacing:1px}
+header small{color:#BFD9F2;font-size:14px}
+.wrap{max-width:1200px;margin:0 auto;padding:14px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px}
+.card{background:#fff;border:1px solid var(--line);border-left:6px solid var(--blue);border-radius:12px;padding:12px 16px;cursor:default}
+.card b{display:block;font-size:34px}
+.card span{color:#5A6B85;font-size:15px}
+.card.g{border-left-color:#00A651}.card.g b{color:#00A651}
+.card.r{border-left-color:var(--red);cursor:pointer}.card.r b{color:var(--red)}
+.card.b b{color:var(--blue)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.bar input{flex:1;min-width:220px;font-size:20px;padding:12px 14px;border:2px solid var(--line);border-radius:10px}
+.bar button{font-size:17px;padding:12px 16px;border:0;border-radius:10px;background:#9AA5B5;color:#fff;font-weight:600;cursor:pointer}
+.bar button.on{background:var(--red)}
+.tw{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:20px}
+th{background:var(--blue);color:#fff;padding:12px 10px;text-align:center;cursor:pointer;position:sticky;top:0;white-space:nowrap}
+td{padding:11px 10px;text-align:center;border-top:1px solid #E3EAF4}
+td:first-child,th:first-child{text-align:left}
+tr:nth-child(even) td{background:#F3F7FC}
+tr.out td{background:#FDE8E8;color:var(--red);font-weight:700}
+tr.out:nth-child(even) td{background:#FAD4D4}
+.badge{padding:3px 10px;border-radius:20px;font-size:15px;font-weight:700}
+.ok{background:#DFF3E6;color:#0A7A3B}.no{background:var(--red);color:#fff}
+.foot{color:#5A6B85;margin:10px 2px;font-size:15px}
+@media(max-width:640px){table{font-size:17px}th.hm,td.hm{display:none}}
+</style></head><body>
+<header><h1>TMS STOCK</h1><small>Inventory - View Only &nbsp;|&nbsp; Last updated: 2026-10-09 10:14 by admin</small></header>
+<div class="wrap">
+<div class="cards">
+<div class="card b"><b id="cp">0</b><span>Total Products</span></div>
+<div class="card g"><b id="cq">0</b><span>Total Quantity</span></div>
+<div class="card r" onclick="toggleOut()"><b id="co">0</b><span>Out of Stock (tap to filter)</span></div>
+</div>
+<div class="bar">
+<input id="q" placeholder="Search Part Name, Part Number or Location" oninput="draw()" autocomplete="off">
+<button id="bo" onclick="toggleOut()">Out of Stock</button>
+<button onclick="location.reload()" style="background:#2E75B6">Refresh</button>
+</div>
+<div class="tw"><table><thead><tr>
+<th onclick="srt(0)">Part Name</th><th onclick="srt(1)">Part Number</th><th onclick="srt(2)">Quantity</th>
+<th onclick="srt(3)">Location</th><th onclick="srt(4)">Status</th><th class="hm" onclick="srt(5)">Last Updated</th>
+</tr></thead><tbody id="tb"></tbody></table></div>
+<div class="foot" id="ft"></div>
+</div>
+<script>
+var D=[["ABR16", "949503430000", 2, "2I", "2026-10-08 12:43"], ["ABR32", "949504230000", 2, "2K", "2026-10-08 10:47"], ["ABT32", "949519430000", 2, "1I", "2026-10-08 14:59"], ["ACB1", "949480230000", 1, "13H", "2026-10-08 15:00"], ["ADB1", "949378430000", 1, "1K", "2026-10-08 10:47"], ["ADB1", "949378230000", 1, "1M", "2026-10-08 12:47"], ["ADB3", "949553233000", 1, "13L", "2026-10-08 13:10"], ["ADB3", "949553230002", 1, "13J", "2026-10-08 14:56"], ["ADB3", "949553431000", 1, "11H", "2026-10-08 15:06"], ["ADB4A", "949578432000", 4, "2C", "2026-10-08 10:47"], ["ADB4A", "949578232000", 1, "11J", "2026-10-08 15:22"], ["ATC7A", "949586230001", 1, "2G", "2026-10-08 12:49"], ["ATC7A", "949586230002", 2, "13M", "2026-10-08 14:56"], ["BAE4", "949586330000", 1, "11A", "2026-10-08 10:47"], ["BAE4DIS (SP)", "949550161002", 2, "11N", "2026-10-08 15:23"], ["BAE6", "949586333000", 1, "11B", "2026-10-08 10:47"], ["BAE6A", "949586334000", 1, "11C", "2026-10-08 15:02"], ["BAE8", "949608330002", 1, "11E", "2026-10-08 10:47"], ["BAE8", "949608330000", 6, "11F", "2026-10-08 15:20"], ["BLCDISS(SP)", "949550163002", 1, "11M", "2026-10-08 15:15"], ["BOARD TCO12", "137194600284", 2, "13E", "2026-10-08 13:05"], ["BRVCT", "978500702001", 1, "1N", "2026-10-08 12:48"], ["CIO1C", "949604333000", 4, "1F", "2026-10-08 15:39"], ["CIO2", "949614330000", 3, "1H", "2026-10-08 14:45"], ["CIO3", "949615330000", 4, "1J", "2026-10-08 14:45"], ["DEA2", "949577230001", 2, "2E", "2026-10-08 10:47"], ["EBO32", "949501430000", 14, "2L", "2026-10-08 10:47"], ["FEB2", "949569431000", 1, "2N", "2026-10-08 10:48"], ["FEB2", "949569430000", 1, "11L", "2026-10-08 16:00"], ["FU3A", "949570330100", 17, "4D", "2026-10-08 10:47"], ["FU3B", "949570331100", 7, "4C", "2026-10-08 10:47"], ["FU3C", "949570332100", 7, "3D", "2026-10-08 10:47"], ["FU4a", "949580330200", 12, "4F", "2026-10-08 10:47"], ["FU4a", "949670303501", 6, "4E", "2026-10-08 10:47"], ["FU5A", "949470107502", 3, "4H", "2026-10-08 10:47"], ["FU5B", "949581331000", 2, "3G", "2026-10-08 10:47"], ["FU5C", "949581332000", 3, "4G", "2026-10-08 10:47"], ["FU5D", "949581333000", 1, "3H", "2026-10-08 10:47"], ["FU6A", "949609330000", 3, "3I", "2026-10-08 15:44"], ["FU6B", "949609331000", 2, "3E", "2026-10-08 15:45"], ["FU6T", "949609331200", 7, "4J", "2026-10-08 10:47"], ["FZK2", "949573330300", 1, "13F", "2026-10-08 14:55"], ["GMB1B", "949516230002", 1, "11I", "2026-10-08 15:09"], ["INK3", "949574230003", 2, "13G", "2026-10-08 15:08"], ["KIM1B", "949579236001", 2, "1B", "2026-10-08 10:47"], ["KIM2D", "949579233101", 4, "2B", "2026-10-08 10:47"], ["KIM3", "949579230301", 1, "2A", "2026-10-08 10:47"], ["KSZ5", "940053810520", 1, "13N", "2026-10-08 13:15"], ["KSZ6", "949593331000", 2, "2H", "2026-10-08 10:47"], ["KSZ6", "949593231001", 2, "2F", "2026-10-08 10:47"], ["KSZ6", "949593330000", 3, "3M", "2026-10-08 14:53"], ["KSZ6", "949593330102", 1, "3B", "2026-10-08 14:54"], ["KSZ7", "949618330000", 1, "2D", "2026-10-08 10:47"], ["LCDISP", "949586360002", 2, "1A", "2026-10-08 13:02"], ["LCDISP", "949550360005", 1, "13A", "2026-10-08 13:04"], ["LCDISP", "949550360003", 1, "11D", "2026-10-08 15:36"], ["NOM3", "949561330000", 2, "1G", "2026-10-08 12:52"], ["RBT7", "949497230101", 1, "1E", "2026-10-08 10:47"], ["RIK6D", "949535234001", 1, "13D", "2026-10-08 13:00"], ["RIK6F", "949535236001", 1, "13C", "2026-10-08 13:00"], ["ROTARY ENCODER", "949470000027", 3, "12C", "2026-10-08 10:47"], ["ROTARY ENCODER", "949470000022", 3, "12D", "2026-10-08 10:47"], ["ROTARY ENCODER", "137182404567", 3, "12A", "2026-10-08 10:47"], ["ROTARY ENCODER", "136082404565", 3, "12B", "2026-10-08 11:03"], ["ROTARY ENCODER", "037252730001", 6, "12F", "2026-10-08 11:04"], ["SBB10B", "949385232000", 0, "13B", "2026-10-08 16:17"], ["SBB15A", "9493388231000", 1, "11K", "2026-10-08 15:50"], ["SBB15B", "949386232000", 1, "13K", "2026-10-08 13:11"], ["SIB2A", "949485431000", 1, "13I", "2026-10-08 13:12"], ["SM20A", "949543335000", 2, "3K", "2026-10-08 10:47"], ["SNB2A", "949490431000", 1, "2M", "2026-10-08 10:47"], ["SU1A", "949544330010", 7, "4L", "2026-10-08 10:47"], ["SU1A", "949544330000", 3, "4I", "2026-10-08 14:48"], ["SU1B", "949544331000", 4, "4K", "2026-10-08 16:18"], ["SU1B", "949544331100", 2, "3L", "2026-10-08 10:47"], ["SU2B", "949544333000", 1, "3J", "2026-10-08 10:47"], ["SU2C", "949546334100", 2, "3F", "2026-10-08 14:41"], ["SUE1A", "949545330100", 1, "4N", "2026-10-08 10:47"], ["SUE1A", "949545330000", 2, "3N", "2026-10-08 14:37"], ["SUE1B", "949545331100", 1, "4M", "2026-10-08 10:47"], ["SUE1C", "949545332000", 2, "3A", "2026-10-08 15:34"], ["TMB1", "949562230000", 3, "1L", "2026-10-08 13:07"], ["VNB1", "949466430000", 2, "1C", "2026-10-08 15:57"], ["VNB2", "949559230000", 3, "1D", "2026-10-08 16:01"], ["WIB1", "949413430000", 1, "11G", "2026-10-08 15:07"], ["ZPB4", "940158800010", 3, "3C", "2026-10-08 15:12"], ["ZPB5", "949588430000", 3, "2J", "2026-10-08 10:47"]], only=false, col=0, asc=true;
+function nk(s){return String(s).toLowerCase().replace(/\d+/g,function(m){return ('0000000000'+m).slice(-10)})}
+function toggleOut(){only=!only;var b=document.getElementById('bo');b.className=only?'on':'';b.textContent=only?'Show All':'Out of Stock';draw()}
+function srt(c){if(col==c)asc=!asc;else{col=c;asc=true}draw()}
+function val(r,c){return c==2?r[2]:c==4?(r[2]>0?1:0):nk(r[c==5?4:c])}
+function draw(){
+ var q=document.getElementById('q').value.toLowerCase().replace(/\s+/g,'');
+ var rows=D.filter(function(r){
+  if(only&&r[2]>0)return false;
+  if(!q)return true;
+  return (r[0]+r[1]+r[3]).toLowerCase().replace(/\s+/g,'').indexOf(q)>=0});
+ rows.sort(function(a,b){var x=val(a,col),y=val(b,col);return (x<y?-1:x>y?1:0)*(asc?1:-1)});
+ var h='';
+ rows.forEach(function(r){var o=r[2]<=0;
+  h+='<tr'+(o?' class="out"':'')+'><td>'+esc(r[0])+'</td><td>'+esc(r[1])+'</td><td>'+r[2]+'</td><td>'+esc(r[3])+'</td><td><span class="badge '+(o?'no">OUT OF STOCK':'ok">In Stock')+'</span></td><td class="hm">'+esc(r[4])+'</td></tr>'});
+ document.getElementById('tb').innerHTML=h||'<tr><td colspan="6">No products found</td></tr>';
+ document.getElementById('ft').textContent='Showing '+rows.length+' of '+D.length+' products';
+}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var tq=0,to=0;D.forEach(function(r){tq+=r[2];if(r[2]<=0)to++});
+document.getElementById('cp').textContent=D.length;document.getElementById('cq').textContent=tq;document.getElementById('co').textContent=to;
+draw();
+</script></body></html>
